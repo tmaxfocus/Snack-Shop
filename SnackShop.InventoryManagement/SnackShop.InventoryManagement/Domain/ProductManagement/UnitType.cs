@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SnackShop.InventoryManagement
+namespace SnackShop.InventoryManagement.Domain.ProductManagement
 {
-   public enum UnitType
+    public enum UnitType
     {
         PerItem,
         PerBox,

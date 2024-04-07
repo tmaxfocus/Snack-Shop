@@ -1,30 +1,31 @@
-﻿using System;
+﻿using SnackShop.InventoryManagement.Domain.General;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SnackShop.InventoryManagement
+namespace SnackShop.InventoryManagement.Domain.ProductManagement
 {
-    public class Product
+    public partial class Product
     {
         public Product(int id) : this(id, string.Empty) { }
         public Product(int id, string name) { Id = id; Name = name; }
 
-        public Product(int id, string name, string? description, UnitType unitType, int maxAmountInStock)
+        public Product(int id, string name, string? description,Price price, UnitType unitType, int maxAmountInStock)
         {
             Id = id;
             Name = name;
             Description = description;
             UnitType = unitType;
-
+            Price = price;
             maxAmountInStock = maxAmountInStock;
 
             UpdateLowStock();
         }
 
-       
+
 
         private int id;
         private string name = string.Empty;
@@ -33,11 +34,12 @@ namespace SnackShop.InventoryManagement
         private int maxItemsInStock = 0;
 
 
-        public int Id { get { return id; }  set{ id = value; } }
+        public Price Price { get; set; }
+        public int Id { get { return id; } set { id = value; } }
 
         public string Name { get { return name; } set { name = value.Length > 50 ? value[..50] : value; } }
 
-        public string Description { get { return description; } set { if(value == null) { description = string.Empty; } else { description = value.Length > 50 ? value[..250] : value; } } }
+        public string Description { get { return description; } set { if (value == null) { description = string.Empty; } else { description = value.Length > 50 ? value[..250] : value; } } }
 
         public UnitType UnitType { get; set; }
 
@@ -47,7 +49,7 @@ namespace SnackShop.InventoryManagement
         public bool IsBelowStockThreshold { get; private set; }
         public void UseProduct(int items)
         {
-            if(items < AmountInStock)
+            if (items < AmountInStock)
             {
                 //use the items
                 AmountInStock -= items;
@@ -69,9 +71,9 @@ namespace SnackShop.InventoryManagement
         {
             StringBuilder sb = new();
             //ToDo: add price here too
-            sb.Append($"{id} {name} \n{description}\n{AmountInStock} item(s) in stock");
+            sb.Append($"{id} {name} \n{description}\n{Price}\n{AmountInStock} item(s) in stock");
 
-            if(IsBelowStockThreshold)
+            if (IsBelowStockThreshold)
             {
                 sb.Append("\n!!STOCK LOW!!");
 
@@ -84,7 +86,7 @@ namespace SnackShop.InventoryManagement
         {
             StringBuilder sb = new();
             //ToDo: add price here too
-            sb.Append($"{id} {name} \n{description}\n{AmountInStock} item(s) in stock");
+            sb.Append($"{id} {name} \n{description}\n{Price}\n{AmountInStock} item(s) in stock");
             sb.Append(extraDetails);
 
             if (IsBelowStockThreshold)
@@ -103,7 +105,7 @@ namespace SnackShop.InventoryManagement
         {
             int newStock = AmountInStock + amount;
 
-            if(newStock < maxItemsInStock)
+            if (newStock < maxItemsInStock)
             {
                 AmountInStock += amount;
             }
@@ -113,44 +115,12 @@ namespace SnackShop.InventoryManagement
                 Log($"{CreateSimpleProductRepresentation} stock overflow. {newStock - AmountInStock} item(s) ordered that couldn't be stored.");
             }
 
-            if(AmountInStock > 10)
+            if (AmountInStock > 10)
             {
                 IsBelowStockThreshold = false;
             }
         }
 
-        private void UpdateLowStock()
-        {
-            if(AmountInStock < 10) // for a fixed value
-            {
-                IsBelowStockThreshold = true;
-            }
-        }
-
-        private void DecreaseStock(int items, string reason)
-        {
-            if(items < AmountInStock)
-            {
-                AmountInStock -= items;
-            }
-            else
-            {
-                AmountInStock = 0;
-            }
-
-            UpdateLowStock();
-            Log(reason);
-        }
-
-        private void Log(string message)
-        {
-            //this could be written in a file
-            Console.WriteLine(message);
-        }
-
-        private string CreateSimpleProductRepresentation()
-        {
-            return $"Product {id} ({name})";
-        }
+       
     }
 }
