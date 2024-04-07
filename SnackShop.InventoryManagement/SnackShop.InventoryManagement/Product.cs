@@ -9,8 +9,23 @@ namespace SnackShop.InventoryManagement
 {
     public class Product
     {
+        public Product(int id) : this(id, string.Empty) { }
+        public Product(int id, string name) { Id = id; Name = name; }
 
-        public Product(int id, string name) { Id = id; Name =name }
+        public Product(int id, string name, string? description, UnitType unitType, int maxAmountInStock)
+        {
+            Id = id;
+            Name = name;
+            Description = description;
+            UnitType = unitType;
+
+            maxAmountInStock = maxAmountInStock;
+
+            UpdateLowStock();
+        }
+
+       
+
         private int id;
         private string name = string.Empty;
         private string? description;
@@ -64,9 +79,44 @@ namespace SnackShop.InventoryManagement
             return sb.ToString();
         }
 
+
+        public string DisplayDetailsFull(string extraDetails)
+        {
+            StringBuilder sb = new();
+            //ToDo: add price here too
+            sb.Append($"{id} {name} \n{description}\n{AmountInStock} item(s) in stock");
+            sb.Append(extraDetails);
+
+            if (IsBelowStockThreshold)
+            {
+                sb.Append("\n!!STOCK LOW!!");
+
+            }
+            return sb.ToString();
+        }
         public void IncreaseStock()
         {
             AmountInStock++;
+        }
+
+        public void IncreaseStrock(int amount)
+        {
+            int newStock = AmountInStock + amount;
+
+            if(newStock < maxItemsInStock)
+            {
+                AmountInStock += amount;
+            }
+            else
+            {
+                AmountInStock = maxItemsInStock;
+                Log($"{CreateSimpleProductRepresentation} stock overflow. {newStock - AmountInStock} item(s) ordered that couldn't be stored.");
+            }
+
+            if(AmountInStock > 10)
+            {
+                IsBelowStockThreshold = false;
+            }
         }
 
         private void UpdateLowStock()
