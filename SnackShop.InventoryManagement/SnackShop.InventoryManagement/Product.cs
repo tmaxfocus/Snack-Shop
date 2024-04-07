@@ -9,6 +9,8 @@ namespace SnackShop.InventoryManagement
 {
     public class Product
     {
+
+        public Product(int id, string name) { Id = id; Name =name }
         private int id;
         private string name = string.Empty;
         private string? description;
